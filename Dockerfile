@@ -1,8 +1,7 @@
 FROM docker:19
 MAINTAINER Maximilian Schmailzl <maximilian@schmailzl.net>
 
-RUN apk upgrade --no-cache && \
-	apk add --no-cache bash iproute2 coreutils ssmtp rsync rdiff-backup openssh-client tzdata gettext
+RUN apk add --no-cache bash iproute2 coreutils ssmtp rsync rdiff-backup openssh-client tzdata gettext
 
 COPY backup /backup
 RUN chmod 700 /backup/*.sh
