@@ -1,0 +1,25 @@
+image: schmailzl/rdiff-backup-client:latest
+manifests:
+  - image: schmailzl/rdiff-backup-client:amd64
+    platform:
+      architecture: amd64
+      os: linux
+  - image: schmailzl/rdiff-backup-client:i386
+    platform:
+      architecture: 386
+      os: linux
+  - image: schmailzl/rdiff-backup-client:armv6
+    platform:
+      architecture: arm
+      os: linux
+      variant: v6
+  - image: schmailzl/rdiff-backup-client:armv7
+    platform:
+      architecture: arm
+      os: linux
+      variant: v7
+  - image: schmailzl/rdiff-backup-client:aarch64
+    platform:
+      architecture: arm64
+      os: linux
+      variant: v8
