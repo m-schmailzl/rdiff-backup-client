@@ -46,38 +46,46 @@ then
 	do
 		engine=$(docker exec "$container" printenv BACKUP_ENGINE)
 		container_name=$(docker inspect -f '{{.Name}}' "$container" | cut -c2-)
-		exit_code=1
+		exit_code=0
+
+		echo "Running backup for container '$container_name'..."
 
 		if [ -z "$engine" ]
 		then
 			engine="default"
 		fi
 		
-		if [ "$engine" = "default" || "$engine" = "volume" ]
+		if [ "$engine" = "volume" ] || ([ "$engine" = "default" ] && ! [ -z "$DATABASE_BACKUP_FORCE" ])
 		then
-			volumes=$(docker inspect -f '{{ range .Mounts }}{{ .Name }} {{ end }}' "$container")
+			volumes=$(docker inspect -f '{{ range .Mounts }}{{ .Name }} {{ end }}' "$container" | awk '{$1=$1};1')
 			
-			if [ -z "$volumes"]
+			if [ -z "$volumes" ]
 			then
-				MSG="${MSG}Error ($container_name): You chose the database backup engine '$engine' but the container has no volumes.\n"
+				FAILED=true
+				error_msg="Error ($container_name): You chose the database backup engine '$engine' but the container has no volumes."
+				MSG="${MSG}$error_msg\n"
+				echo "$error_msg"
 			else
 				for volume in "$volumes"
 				do
-					if [ -d "$VOLUME_DIR/$volume" ]
+					if ! [ -d "$VOLUME_DIR/$volume" ]
 					then
-						MSG="${MSG}Error ($container_name): You chose the database backup engine '$engine' but the volume '$volume' could not be found. Make sure it is mounted to '$VOLUME_DIR/$volume'.\n"
+						FAILED=true
+						error_msg="Error ($container_name): You chose the database backup engine '$engine' but the volume '$volume' could not be found. Make sure it is mounted to '$VOLUME_DIR/$volume'."
+						MSG="${MSG}$error_msg\n"
+						echo "$error_msg"
 					else
 						rsync -a -q -l "$VOLUME_DIR/$volume" volume_data
-						if ! [ $? = 0 ]; then exit_code=1; fi
+						if ! [ $? = 0 ]; then exit_code=100; fi
 
 						docker stop "$container"
-						if ! [ $? = 0 ]; then exit_code=1; fi
+						if ! [ $? = 0 ]; then exit_code=100; fi
 
 						rsync -a -q -l "$VOLUME_DIR/$volume" volume_data
-						if ! [ $? = 0 ]; then exit_code=1; fi
+						if ! [ $? = 0 ]; then exit_code=100; fi
 
 						docker start "$container"
-						if ! [ $? = 0 ]; then exit_code=1; fi
+						if ! [ $? = 0 ]; then exit_code=100; fi
 					fi
 				done
 			fi
@@ -86,11 +94,14 @@ then
 			user=$(docker exec "$container" printenv BACKUP_USER)
 			password=$(docker exec "$container" printenv BACKUP_PASSWORD)
 			
-			if [ -z "$user" || -z "$password" ]
+			if [ -z "$user" ] || [ -z "$password" ]
 			then
-				MSG="${MSG}Error ($container_name): You need to specify BACKUP_USER and BACKUP_PASSWORD for database backup engine '$engine'\n"
+				FAILED=true
+				error_msg="Error ($container_name): You need to specify BACKUP_USER and BACKUP_PASSWORD for database backup engine '$engine'."
+				MSG="${MSG}$error_msg\n"
+				echo "$error_msg"
 			else
-				docker exec "$container" /usr/bin/mysqldump --all-databases -u "$user" --password="$password" > "sqldumps/$container_name.sql"
+				docker exec "$container" mysqldump --all-databases -u "$user" --password="$password" > "dumps/$container_name.sql"
 				exit_code=$?
 			fi
 		elif [ "$engine" = "postgres" ]
@@ -99,9 +110,12 @@ then
 			
 			if [ -z "$user" ]
 			then
-				MSG="${MSG}Error ($container_name): You need to specify BACKUP_USER for database backup engine '$engine'\n"
+				FAILED=true
+				error_msg="Error ($container_name): You need to specify BACKUP_USER for database backup engine '$engine'."
+				MSG="${MSG}$error_msg\n"
+				echo "$error_msg"
 			else
-				docker exec "$container" pg_dumpall -U "$user" -w > "sqldumps/$container_name.bak"
+				docker exec "$container" pg_dumpall -U "$user" -w > "dumps/$container_name.bak"
 				exit_code=$?
 			fi
 		elif [ "$engine" = "custom" ]
@@ -110,22 +124,27 @@ then
 			
 			if [ -z "$command" ]
 			then
-				MSG="${MSG}Error ($container_name): You need to specify BACKUP_COMMAND for database backup engine '$engine'\n"
+				FAILED=true
+				error_msg="Error ($container_name): You need to specify BACKUP_COMMAND for database backup engine '$engine'."
+				MSG="${MSG}$error_msg\n"
+				echo "$error_msg"
 			else
-				docker exec "$container" $command > "sqldumps/$container_name.bak"
+				docker exec "$container" bash -c "$command" > "dumps/$container_name.bak"
 				exit_code=$?
 			fi
 		else
 			FAILED=true
-			echo "Error: Invalid BACKUP_ENGINE for '$container_name'"
-			MSG="${MSG}Error: Invalid BACKUP_ENGINE for '$container_name'\n"
+			error_msg="Error: Invalid BACKUP_ENGINE for '$container_name'"
+			MSG="${MSG}$error_msg\n"
+			echo "$error_msg"
 		fi
 
 		if ! [ $exit_code = 0 ]
 		then
 			FAILED=true
-			echo "Error: Database backup for '$container_name' failed."
-			MSG="${MSG}Error: Database backup for '$container_name' failed.\n"
+			error_msg="Error: Database backup for '$container_name' failed. (Exit code: $exit_code)"
+			MSG="${MSG}$error_msg\n"
+			echo "$error_msg"
 		fi
 	done
 fi
@@ -137,17 +156,19 @@ then
 fi
 
 echo "Starting backup..."
-rdiff-backup --print-statistics --verbosity "$VERBOSITY_LEVEL" --exclude-sockets --remote-schema "ssh -p $BACKUP_PORT -i /root/.ssh/id_rsa -C %s sudo rdiff-backup --server" "$BACKUP_DIR" "backupuser@$BACKUP_SERVER::$TARGET_DIR/$SERVER_NAME"
+rdiff-backup --print-statistics --verbosity "$VERBOSITY_LEVEL" --exclude-sockets --no-eas --no-acls --remote-schema "ssh -p $BACKUP_PORT -i /root/.ssh/id_rsa -C %s sudo rdiff-backup --server" "$BACKUP_DIR" "backupuser@$BACKUP_SERVER::$TARGET_DIR/$SERVER_NAME"
 if ! [ $? = 0 ]
 then
 	FAILED=true
-	MSG="${MSG}Rdiff Backup command failed.\n"
-	echo "ERROR: Rdiff Backup command failed."
+	error_msg="Rdiff Backup command failed."
+	MSG="${MSG}$error_msg\n"
+	echo "$error_msg"
 fi
 
 if $FAILED
 then
-	echo "BACKUP FAILED!"
+	printf "\n\n\nBACKUP FAILED!\n"
+	printf "$MSG"
 	
 	if ! [ -z "$ADMIN_MAIL" ]
 	then

@@ -1,4 +1,5 @@
-FROM alpine:3
+FROM arm32v6/alpine:3
+COPY qemu-arm-static /usr/bin/
 MAINTAINER Maximilian Schmailzl <maximilian@schmailzl.net>
 
 RUN apk add --no-cache bash docker-cli iproute2 coreutils ssmtp rsync rdiff-backup openssh-client tzdata gettext

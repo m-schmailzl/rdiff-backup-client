@@ -4,7 +4,7 @@ Docker image to backup files and databases with rdiff-backup
 
 This image is not finished yet. Description will follow.
 
-##### Available options: 
+#### Available options: 
 
 **TZ**
 
@@ -26,17 +26,19 @@ This image is not finished yet. Description will follow.
 
 **BACKUP_PORT**
 
-**VERBOSITY_LEVEL** 5
+**VERBOSITY_LEVEL** 3
 
 **NETWORK_LIMIT** 0
 
 
-**DATABASE_BACKUP_SCHEMA**
+**DATABASE_BACKUP_SCHEMA** (name/all)
 
 **DATABASE_BACKUP_FILTER**
 
+**DATABASE_BACKUP_FORCE**
 
-**SSMTP_CONF** /backup/files/ssmtp.conf
+
+**SSMTP_CONF** /root/.ssh/ssmtp.conf
 
 **SSMTP_MAILHUB**
 
@@ -57,9 +59,9 @@ This image is not finished yet. Description will follow.
 **SSMTP_CA_FILE**
 
 
-##### Database container options: 
+#### Database container options: 
 
-**BACKUP_ENGINE**
+**BACKUP_ENGINE** (volume/mysql/postgres/custom)
 
 **BACKUP_COMMAND**
 
@@ -68,7 +70,7 @@ This image is not finished yet. Description will follow.
 **BACKUP_PASSWORD**
 
 
-##### Volumes:
+#### Volumes:
 
 **/media/backup** : Default backup directory
 
