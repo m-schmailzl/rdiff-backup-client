@@ -156,7 +156,7 @@ then
 fi
 
 echo "Starting backup..."
-rdiff-backup --print-statistics --verbosity "$VERBOSITY_LEVEL" --exclude-sockets --no-eas --no-acls --remote-schema "ssh -p $BACKUP_PORT -i /root/.ssh/id_rsa -C %s sudo rdiff-backup --server" "$BACKUP_DIR" "backupuser@$BACKUP_SERVER::$TARGET_DIR/$SERVER_NAME"
+rdiff-backup --print-statistics --verbosity "$VERBOSITY_LEVEL" --exclude-sockets --no-eas --no-acls $RDIFF_BACKUP_PARAMS --remote-schema "ssh -p $BACKUP_PORT -i /root/.ssh/id_rsa -C %s sudo rdiff-backup --server" "$BACKUP_DIR" "backupuser@$BACKUP_SERVER::$TARGET_DIR/$SERVER_NAME"
 if ! [ $? = 0 ]
 then
 	FAILED=true

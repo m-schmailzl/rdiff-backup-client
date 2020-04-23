@@ -28,6 +28,8 @@ This image is not finished yet. Description will follow.
 
 **VERBOSITY_LEVEL** 3
 
+**RDIFF_BACKUP_PARAMS**
+
 **NETWORK_LIMIT** 0
 
 
