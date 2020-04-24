@@ -4,9 +4,9 @@
 mkdir -p /root/.ssh
 cd /root/.ssh
 
-if ! [ -e ssh_host_ecdsa_key.pub ]
+if ! [ -e ssh_host_ed25519_key.pub ]
 then
-	echo "Error: ssh_host_ecdsa_key.pub not found. Make sure it is located at '/root/.ssh/ssh_host_ecdsa_key.pub'."
+	echo "Error: ssh_host_ed25519_key.pub not found. Make sure it is located at '/root/.ssh/ssh_host_ed25519_key.pub'."
 	exit 1
 fi
 
@@ -16,7 +16,7 @@ then
 	exit 2
 fi
 
-key="$(head -n 1 ssh_host_ecdsa_key.pub | cut -d ' ' -f1-2)"
+key="$(head -n 1 ssh_host_ed25519_key.pub | cut -d ' ' -f1-2)"
 if [ -z "$key" ]; then exit 3; fi
 
 echo "[$BACKUP_SERVER]:$BACKUP_PORT $key" > known_hosts

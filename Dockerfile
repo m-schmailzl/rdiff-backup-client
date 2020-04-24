@@ -9,7 +9,8 @@ RUN chmod 700 /backup/*.sh
 ENV BACKUP_DIR /media/backup
 ENV VOLUME_DIR /media/volumes
 ENV TARGET_DIR /media/backups
-ENV NETWORK_LIMIT 0 # in Mbit/s
+ENV SSH_PARAMS "-T -o Compression=no -x"
+ENV NETWORK_LIMIT 0
 ENV VERBOSITY_LEVEL 3
 ENV SSMTP_CONF /root/.ssh/ssmtp.conf
 ENV SSMTP_AUTHMETHOD LOGIN

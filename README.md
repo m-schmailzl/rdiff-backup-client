@@ -76,4 +76,4 @@ This image is not finished yet. Description will follow.
 
 **/media/backup** : Default backup directory
 
-**/root/.ssh** : Keys for SSH access (must contain id_rsa and ssh_host_ecdsa_key.pub)
+**/root/.ssh** : Keys for SSH access (must contain id_rsa and ssh_host_ed25519_key.pub)
