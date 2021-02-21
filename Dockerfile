@@ -1,7 +1,7 @@
 FROM alpine:3
 MAINTAINER Maximilian Schmailzl <maximilian@schmailzl.net>
 
-RUN apk add --no-cache bash docker-cli iproute2 coreutils ssmtp rsync rdiff-backup openssh-client tzdata gettext
+RUN apk add --no-cache bash python3 docker-cli iproute2 coreutils ssmtp rsync rdiff-backup openssh-client tzdata gettext
 
 COPY backup /backup
 RUN chmod 700 /backup/*.sh
