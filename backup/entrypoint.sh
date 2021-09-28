@@ -42,7 +42,7 @@ then
 		db_containers=$(docker ps -q -f)
 	fi
 	
-	for container in $(docker ps -q -f name=_db)
+	for container in $db_containers
 	do
 		engine=$(docker exec "$container" printenv BACKUP_ENGINE)
 		container_name=$(docker inspect -f '{{.Name}}' "$container" | cut -c2-)
@@ -132,6 +132,13 @@ then
 				docker exec "$container" bash -c "$command" > "dumps/$container_name.bak"
 				exit_code=$?
 			fi
+		elif [ "$engine" = "none" ]
+		then
+			# do nothing
+		elif [ "$engine" = "default" ] && [ "$DATABASE_BACKUP_SCHEMA" = "all" ]
+		then
+			container_name=$(docker inspect -f '{{.Name}}' "$container" | cut -c2-)
+			echo "Container '$container_name' has been skipped (no backup engine specified)."
 		else
 			FAILED=true
 			error_msg="Error: Invalid BACKUP_ENGINE for '$container_name'"
