@@ -1,5 +1,5 @@
 FROM alpine:3
-MAINTAINER Maximilian Schmailzl <maximilian@schmailzl.net>
+LABEL maintainer="maximilian@schmailzl.net"
 
 RUN apk add --no-cache bash python3 docker-cli iproute2 coreutils ssmtp rsync rdiff-backup openssh-client tzdata gettext
 
