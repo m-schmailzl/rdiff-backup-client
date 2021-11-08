@@ -45,6 +45,7 @@ then
 	for container in $db_containers
 	do
 		engine=$(docker exec "$container" printenv BACKUP_ENGINE)
+		if ! [ $? = 0 ]; then engine="default"; fi
 		container_name=$(docker inspect -f '{{.Name}}' "$container" | cut -c2-)
 		exit_code=0
 
