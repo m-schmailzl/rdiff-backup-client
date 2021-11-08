@@ -66,6 +66,7 @@ then
 				MSG="${MSG}$error_msg\n"
 				echo "$error_msg"
 			else
+				# backup the volume with rsync
 				for volume in "$volumes"
 				do
 					if ! [ -d "$VOLUME_DIR/$volume" ]
@@ -77,17 +78,24 @@ then
 					else
 						rsync -a -q -l "$VOLUME_DIR/$volume" volume_data
 						if ! [ $? = 0 ]; then exit_code=100; fi
+					fi
+				done
 
-						docker stop "$container"
-						if ! [ $? = 0 ]; then exit_code=100; fi
+				docker stop "$container"
+				if ! [ $? = 0 ]; then exit_code=100; fi
 
+				# backup the volume again after stopping the container
+				for volume in "$volumes"
+				do
+					if [ -d "$VOLUME_DIR/$volume" ]
+					then
 						rsync -a -q -l "$VOLUME_DIR/$volume" volume_data
-						if ! [ $? = 0 ]; then exit_code=100; fi
-
-						docker start "$container"
 						if ! [ $? = 0 ]; then exit_code=100; fi
 					fi
 				done
+
+				docker start "$container"
+				if ! [ $? = 0 ]; then exit_code=100; fi
 			fi
 		elif [ "$engine" = "mysql" ]
 		then
