@@ -39,7 +39,7 @@ then
 		fi
 	elif [ "$DATABASE_BACKUP_SCHEMA" = "all" ]
 	then
-		db_containers=$(docker ps -q -f)
+		db_containers=$(docker ps -q)
 	fi
 	
 	for container in $db_containers
