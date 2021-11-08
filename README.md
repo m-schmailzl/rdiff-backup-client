@@ -33,7 +33,7 @@ This image is not finished yet. Description will follow.
 **NETWORK_LIMIT** 0
 
 
-**DATABASE_BACKUP_SCHEMA** (name/all)
+**DATABASE_BACKUP_SCHEMA** (name/all/none)
 
 **DATABASE_BACKUP_FILTER**
 
@@ -63,7 +63,7 @@ This image is not finished yet. Description will follow.
 
 #### Database container options: 
 
-**BACKUP_ENGINE** (volume/mysql/postgres/custom)
+**BACKUP_ENGINE** (volume/mysql/postgres/custom/none)
 
 **BACKUP_COMMAND**
 
