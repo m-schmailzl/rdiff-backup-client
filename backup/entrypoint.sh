@@ -134,7 +134,7 @@ then
 			fi
 		elif [ "$engine" = "none" ]
 		then
-			# do nothing
+			:
 		elif [ "$engine" = "default" ] && [ "$DATABASE_BACKUP_SCHEMA" = "all" ]
 		then
 			container_name=$(docker inspect -f '{{.Name}}' "$container" | cut -c2-)
