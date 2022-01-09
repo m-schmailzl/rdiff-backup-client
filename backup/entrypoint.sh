@@ -14,10 +14,6 @@ echo "--------------------------------------------------------------------------
 echo "Started backup on $(date)"
 echo "-----------------------------------------------------------------------------"
 
-mkdir -p "$BACKUP_DIR/databases/dumps"
-mkdir -p "$BACKUP_DIR/databases/volume_data"
-cd "$BACKUP_DIR/databases"
-
 if [ -z "$SERVER_NAME" ]
 then
 	echo "Error: SERVER_NAME has not been set."
@@ -27,6 +23,10 @@ fi
 
 if ! [ -z "$DATABASE_BACKUP_SCHEMA" ]
 then
+	mkdir -p "$BACKUP_DIR/databases/dumps"
+	mkdir -p "$BACKUP_DIR/databases/volume_data"
+	cd "$BACKUP_DIR/databases"	
+	
 	if [ "$DATABASE_BACKUP_SCHEMA" = "name" ]
 	then
 		if [ -z "$DATABASE_BACKUP_FILTER" ]
