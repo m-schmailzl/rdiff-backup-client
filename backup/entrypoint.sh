@@ -178,7 +178,7 @@ then
 	if ! [ $? = 0 ]
 	then 
 		echo "Error: Could not check free disk space!"
-	else if (( $(($FREE_BACKUP_SPACE*1024*1024)) < $(echo $free_space | tail -1) ))
+	elif (( $(($FREE_BACKUP_SPACE*1024*1024)) < $(echo $free_space | tail -1) ))
 		FAILED=true
 		error_msg="There is not enough space left on the backup device."
 		MSG="${MSG}$error_msg\n"
