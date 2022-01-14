@@ -174,7 +174,7 @@ fi
 if ! [ -z "$FREE_BACKUP_SPACE" ]
 then
 	echo "Checking available disk space..."
-	free_space=$(ssh -p $BACKUP_PORT -i /root/.ssh/id_rsa sudo mkdir -p "$TARGET_DIR/$SERVER_NAME" && df --output=avail "$TARGET_DIR/$SERVER_NAME")
+	free_space=$(ssh -p $BACKUP_PORT -i /root/.ssh/id_rsa backupuser@$BACKUP_SERVER sudo mkdir -p "$TARGET_DIR/$SERVER_NAME" && df --output=avail "$TARGET_DIR/$SERVER_NAME")
 	if ! [ $? = 0 ]
 	then 
 		echo "Error: Could not check free disk space!"
