@@ -32,6 +32,8 @@ This image is not finished yet. Description will follow.
 
 **NETWORK_LIMIT** 0
 
+**FREE_BACKUP_SPACE**
+
 
 **DATABASE_BACKUP_SCHEMA** (name/all/none)
 
