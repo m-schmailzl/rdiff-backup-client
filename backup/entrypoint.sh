@@ -171,14 +171,33 @@ then
 	tc qdisc add dev eth0 root tbf rate "${NETWORK_LIMIT}mbit" burst 32kbit latency 500ms
 fi
 
-echo "Starting backup..."
-rdiff-backup --print-statistics --verbosity "$VERBOSITY_LEVEL" --exclude-sockets --no-eas --no-acls $RDIFF_BACKUP_PARAMS --remote-schema "ssh -p $BACKUP_PORT -i /root/.ssh/id_rsa $SSH_PARAMS -C %s sudo rdiff-backup --server" "$BACKUP_DIR" "backupuser@$BACKUP_SERVER::$TARGET_DIR/$SERVER_NAME"
-if ! [ $? = 0 ]
+if ! [ -z "$FREE_BACKUP_SPACE" ]
 then
-	FAILED=true
-	error_msg="Rdiff Backup command failed."
-	MSG="${MSG}$error_msg\n"
-	echo "$error_msg"
+	echo "Checking available disk space..."
+	free_space=$(ssh -p $BACKUP_PORT -i /root/.ssh/id_rsa backupuser@$BACKUP_SERVER "sudo mkdir -p '$TARGET_DIR/$SERVER_NAME' && sudo df --output=avail '$TARGET_DIR/$SERVER_NAME' | tail -1")
+	if ! [ $? = 0 ]
+	then 
+		echo "Error: Could not check free disk space!"
+	elif (( $(($FREE_BACKUP_SPACE*1024*1024)) > "$free_space" ))
+	then
+		FAILED=true
+		space=$(($free_space/1024/1024))
+		printf "There is not enough space left on the backup device.\nFree space: $space GB\nConfigured minimum: $FREE_BACKUP_SPACE GB"
+		MSG="${MSG}There is not enough space left on the backup device.\n"
+	fi
+fi
+
+if ! $FAILED
+then
+	echo "Starting backup..."
+	rdiff-backup --print-statistics --verbosity "$VERBOSITY_LEVEL" --exclude-sockets --no-eas --no-acls $RDIFF_BACKUP_PARAMS --remote-schema "ssh -p $BACKUP_PORT -i /root/.ssh/id_rsa $SSH_PARAMS -C %s sudo rdiff-backup --server" "$BACKUP_DIR" "backupuser@$BACKUP_SERVER::$TARGET_DIR/$SERVER_NAME"
+	if ! [ $? = 0 ]
+	then
+		FAILED=true
+		error_msg="Rdiff Backup command failed."
+		MSG="${MSG}$error_msg\n"
+		echo "$error_msg"
+	fi
 fi
 
 if $FAILED
