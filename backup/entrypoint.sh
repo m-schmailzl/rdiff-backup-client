@@ -182,9 +182,8 @@ then
 	then
 		FAILED=true
 		space=$(($free_space/1024/1024))
-		error_msg="There is not enough space left on the backup device.\nFree space: $space GB\nConfigured minimum: $FREE_BACKUP_SPACE GB"
-		MSG="${MSG}$error_msg\n"
-		echo "$error_msg"
+		printf "There is not enough space left on the backup device.\nFree space: $space GB\nConfigured minimum: $FREE_BACKUP_SPACE GB"
+		MSG="${MSG}There is not enough space left on the backup device.\n"
 	fi
 fi
 
