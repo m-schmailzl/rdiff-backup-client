@@ -178,7 +178,7 @@ then
 	if ! [ $? = 0 ]
 	then 
 		echo "Error: Could not check free disk space!"
-	elif (( $(($FREE_BACKUP_SPACE*1024*1024)) < "$free_space" ))
+	elif (( $(($FREE_BACKUP_SPACE*1024*1024)) > "$free_space" ))
 	then
 		FAILED=true
 		space=$(($free_space/1024/1024))
