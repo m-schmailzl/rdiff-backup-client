@@ -174,11 +174,11 @@ fi
 if ! [ -z "$FREE_BACKUP_SPACE" ]
 then
 	echo "Checking available disk space..."
-	free_space=$(ssh -p $BACKUP_PORT -i /root/.ssh/id_rsa backupuser@$BACKUP_SERVER sudo mkdir -p "$TARGET_DIR/$SERVER_NAME" && df --output=avail "$TARGET_DIR/$SERVER_NAME")
+	free_space=$(ssh -p $BACKUP_PORT -i /root/.ssh/id_rsa backupuser@$BACKUP_SERVER "sudo mkdir -p '$TARGET_DIR/$SERVER_NAME' && sudo df --output=avail '$TARGET_DIR/$SERVER_NAME' | tail -1")
 	if ! [ $? = 0 ]
 	then 
 		echo "Error: Could not check free disk space!"
-	elif (( $(($FREE_BACKUP_SPACE*1024*1024)) < $(echo $free_space | tail -1) ))
+	elif (( $(($FREE_BACKUP_SPACE*1024*1024)) < "$free_space" ))
 	then
 		FAILED=true
 		error_msg="There is not enough space left on the backup device."
