@@ -65,7 +65,7 @@ This image is not finished yet. Description will follow.
 
 #### Database container options: 
 
-**BACKUP_ENGINE** (volume/mysql/postgres/custom/none)
+**BACKUP_ENGINE** (volume/shutdown/mysql/postgres/custom/none)
 
 **BACKUP_COMMAND**
 

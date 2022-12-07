@@ -9,6 +9,7 @@ fi
 
 MSG="The backup of $SERVER_NAME failed:\n"
 FAILED=false
+shutdown_containers=()
 
 echo "-----------------------------------------------------------------------------"
 echo "Started backup on $(date)"
@@ -141,6 +142,11 @@ then
 				docker exec "$container" bash -c "$command" > "dumps/$container_name.bak"
 				exit_code=$?
 			fi
+		elif [ "$engine" = "shutdown" ]
+		then
+			shutdown_containers[${#shutdown_containers[@]}]=$container
+			echo "Stopping container '$container_name'..."
+			docker stop "$container"
 		elif [ "$engine" = "none" ]
 		then
 			:
@@ -199,6 +205,11 @@ then
 		echo "$error_msg"
 	fi
 fi
+
+for container in $shutdown_containers
+do
+	docker start "$container"
+done
 
 if $FAILED
 then
