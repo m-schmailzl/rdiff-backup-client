@@ -16,6 +16,9 @@ then
 	exit 2
 fi
 
+chown root:root id_rsa
+chmod 600 id_rsa
+
 key="$(head -n 1 ssh_host_ed25519_key.pub | cut -d ' ' -f1-2)"
 if [ -z "$key" ]; then exit 3; fi
 
