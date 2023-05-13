@@ -58,7 +58,7 @@ This image is not finished yet. Description will follow.
 
 **SSMTP_TLS** yes
 
-**SSMTP_STARTTLS** no
+**SSMTP_STARTTLS** yes
 
 **SSMTP_CA_FILE**
 

@@ -6,16 +6,16 @@ RUN apk add --no-cache bash python3 docker-cli iproute2 coreutils ssmtp rsync rd
 COPY backup /backup
 RUN chmod 700 /backup/*.sh
 
-ENV BACKUP_DIR /media/backup
-ENV VOLUME_DIR /media/volumes
-ENV TARGET_DIR /media/backups
-ENV SSH_PARAMS "-T -o Compression=no -x"
-ENV NETWORK_LIMIT 0
-ENV VERBOSITY_LEVEL 3
-ENV SSMTP_CONF /root/.ssh/ssmtp.conf
-ENV SSMTP_AUTHMETHOD LOGIN
-ENV SSMTP_TLS yes
-ENV SSMTP_STARTTLS no
+ENV BACKUP_DIR=/media/backup \
+    VOLUME_DIR=/media/volumes \
+    TARGET_DIR=/media/backups \
+    SSH_PARAMS="-T -o Compression=no -x" \
+    NETWORK_LIMIT=0 \
+    VERBOSITY_LEVEL=3 \
+    SSMTP_CONF=/root/.ssh/ssmtp.conf \
+    SSMTP_AUTHMETHOD=LOGIN \
+    SSMTP_TLS=yes \
+    SSMTP_STARTTLS=yes
 
 VOLUME /root/.ssh
 
