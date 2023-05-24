@@ -34,6 +34,10 @@ This image is not finished yet. Description will follow.
 
 **FREE_BACKUP_SPACE**
 
+**MIN_BACKUP_SIZE**
+
+**MAX_BACKUP_SIZE**
+
 
 **DATABASE_BACKUP_SCHEMA** (name/all/none)
 

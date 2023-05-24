@@ -177,6 +177,27 @@ then
 	tc qdisc add dev eth0 root tbf rate "${NETWORK_LIMIT}mbit" burst 32kbit latency 500ms
 fi
 
+if ! [ -z "$MIN_BACKUP_SIZE" ] || ! [ -z "$MAX_BACKUP_SIZE" ] 
+then
+	echo "Checking backup size..."
+	size=$(du -s "$BACKUP_DIR" | cut -f1)
+	gb=$(($size/1024/1024))
+	if ! [ $? = 0 ]
+	then 
+		echo "Error: Could not check backup size!"
+	elif ! [ -z "$MAX_BACKUP_SIZE" ] && (( $(($MAX_BACKUP_SIZE*1024*1024)) < "$size" ))
+	then
+		FAILED=true
+		printf "The source directory is too big.\nSize: $gb GB\nConfigured maximum: $MAX_BACKUP_SIZE GB\n"
+		MSG="${MSG}The source directory is too big.\n"
+	elif ! [ -z "$MIN_BACKUP_SIZE" ] && (( $(($MIN_BACKUP_SIZE*1024*1024)) > "$size" ))
+	then
+		FAILED=true
+		printf "The source directory is too small.\nSize: $gb GB\nConfigured minimum: $MIN_BACKUP_SIZE GB\n"
+		MSG="${MSG}The source directory is too small.\n"
+	fi
+fi
+
 if ! [ -z "$FREE_BACKUP_SPACE" ]
 then
 	echo "Checking available disk space..."
@@ -188,7 +209,7 @@ then
 	then
 		FAILED=true
 		space=$(($free_space/1024/1024))
-		printf "There is not enough space left on the backup device.\nFree space: $space GB\nConfigured minimum: $FREE_BACKUP_SPACE GB"
+		printf "There is not enough space left on the backup device.\nFree space: $space GB\nConfigured minimum: $FREE_BACKUP_SPACE GB\n"
 		MSG="${MSG}There is not enough space left on the backup device.\n"
 	fi
 fi
