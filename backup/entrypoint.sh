@@ -217,7 +217,17 @@ fi
 if ! $FAILED
 then
 	echo "Starting backup..."
-	rdiff-backup --print-statistics --verbosity "$VERBOSITY_LEVEL" --exclude-sockets --no-eas --no-acls $RDIFF_BACKUP_PARAMS --remote-schema "ssh -p $BACKUP_PORT -i /root/.ssh/id_rsa $SSH_PARAMS -C %s sudo rdiff-backup --server" "$BACKUP_DIR" "backupuser@$BACKUP_SERVER::$TARGET_DIR/$SERVER_NAME"
+	rdiff-backup \
+		"-v$VERBOSITY_LEVEL" \
+		--remote-schema "ssh -p $BACKUP_PORT -i /root/.ssh/id_rsa $SSH_PARAMS -C %s sudo rdiff-backup server" \
+		$RDIFF_CMD_PARAMS \
+		backup \
+		--print-statistics \
+		--exclude-sockets --no-eas --no-acls \
+		$RDIFF_BACKUP_PARAMS \
+		"$BACKUP_DIR" \
+		"backupuser@$BACKUP_SERVER::$TARGET_DIR/$SERVER_NAME"
+
 	if ! [ $? = 0 ]
 	then
 		FAILED=true
