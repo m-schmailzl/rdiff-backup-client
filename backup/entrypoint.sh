@@ -217,7 +217,8 @@ fi
 if ! $FAILED
 then
 	echo "Starting backup..."
-	rdiff-backup \
+
+	output=$(rdiff-backup \
 		"-v$VERBOSITY_LEVEL" \
 		--remote-schema "ssh -p $BACKUP_PORT -i /root/.ssh/id_rsa $SSH_PARAMS -C %s sudo rdiff-backup server" \
 		$RDIFF_CMD_PARAMS \
@@ -226,15 +227,17 @@ then
 		--exclude-sockets --no-eas --no-acls \
 		$RDIFF_BACKUP_PARAMS \
 		"$BACKUP_DIR" \
-		"backupuser@$BACKUP_SERVER::$TARGET_DIR/$SERVER_NAME"
+		"backupuser@$BACKUP_SERVER::$TARGET_DIR/$SERVER_NAME" 2>&1)
 
 	if ! [ $? = 0 ]
 	then
 		FAILED=true
-		error_msg="Rdiff Backup command failed."
-		MSG="${MSG}$error_msg\n"
+		error_msg="Rdiff Backup command failed:"
+		MSG="${MSG}$error_msg\n$output\n"
 		echo "$error_msg"
 	fi
+
+	echo "$output"
 fi
 
 for container in $shutdown_containers
