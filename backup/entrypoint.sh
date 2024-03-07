@@ -261,6 +261,8 @@ then
 			echo "Error: Failed to send an email to '$ADMIN_MAIL'. Check your ssmtp settings, ADMIN_MAIL and EMAIL_FROM."
 		fi
 	fi
+
+	exit 2
 else
 	echo "Backup finished without errors."
 fi
