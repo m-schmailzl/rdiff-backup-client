@@ -2,7 +2,7 @@
 
 Docker image to backup files and databases with rdiff-backup
 
-This image is not finished yet. Description will follow.
+This image is no longer maintained. Use [schmailzl/borg-backup](https://github.com/m-schmailzl/borg-backup) instead.
 
 #### Available options: 
 
